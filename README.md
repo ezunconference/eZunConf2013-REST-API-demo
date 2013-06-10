@@ -29,7 +29,7 @@ create the corresponding content in the eZ Publish repository with the REST API!
 
 ## Usage
 
-  * Go to http://<ezpublish-url>/demorest/
+  * Go to http://[ezpublish-url]/demorest/
   * The browser should ask for the permission to use the webcam
   * Click on *Capture!* to take a picture with your webcam
   * In *Your profile* part, fill a name and click on *Publish*
