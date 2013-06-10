@@ -1,0 +1,53 @@
+body
+{
+font-family: sans-serif;
+font-size:110%;
+}
+
+canvas
+{
+    display:none;
+}
+.log
+{
+    background: #eee;
+    position:fixed;
+    width:60%;
+    top:0;
+    right:0;
+    padding:1em;
+    border-bottom-left-radius: 5px;
+    border:1px solid #ccc;
+    border-top:0;
+    border-right:0;
+    font-size:90%;
+}
+.yui3-button
+{
+    font-size:130%;
+}
+
+input[type=text]
+{
+    font-size:140%;
+    border-radius:3px;
+    border: 1px solid #ddd;
+    padding:3px;
+}
+
+fieldset
+{
+    text-align:center;
+    border:1px solid #ddd;
+}
+.authenticate
+{
+    display:none;
+    text-align:left;
+}
+
+fieldset legend
+{
+    text-align:left;
+    padding:0.6em;
+}

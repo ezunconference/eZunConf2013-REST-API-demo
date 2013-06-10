@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>REST API Demo</title>
+    <link rel="stylesheet" type="text/css" href="cssgrids-min.css">
+    <link rel="stylesheet" type="text/css" href="cssbutton-min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="yui3-g">
+        <section class="app yui3-u-1-3">
+            <div class="inner">
+            <fieldset>
+                <legend>Please smile</legend>
+                <video id="video"></video>
+                <canvas id="canvas"></canvas>
+                <p>
+                    <button id="startbutton" class="yui3-button" disabled="disabled">Capture!</button>
+                </p>
+            </fieldset>
+            <fieldset class="authenticate">
+                <legend>Authenticate as...</legend>
+                <p>Login: <input type="text" id="username" value="admin"></p>
+                <p>Password: <input type="text" id="password" value="ezpublish"></p>
+                <p><input type="submit" id="login" class="yui3-button" value="Login!"> <span id="token"></span></p>
+            </fieldset>
+            <fieldset class="profile">
+                <legend>Your profile</legend>
+                <p>
+                <img src="smiley.png" id="photo" alt="photo" width="320">
+                </p>
+                <p>
+                    <input type="text" name="name" id="photoname" class="photo-name" placeholder="What's your name ?">
+                </p>
+                <p>
+                    <button id="firebutton" class="yui3-button" disabled="disabled">Publish</button>
+                </p>
+            </fieldset>
+        </section>
+    </div>
+    <section class="log">
+        <h2>Log</h2>
+        <pre id="log"></pre>
+    </section>
+<script>
+    (function() {
+
+        var streaming = false,
+            video        = document.querySelector('#video'),
+            cover        = document.querySelector('#cover'),
+            canvas       = document.querySelector('#canvas'),
+            photo        = document.querySelector('#photo'),
+            startbutton  = document.querySelector('#startbutton'),
+            go           = document.querySelector('#firebutton'),
+            login        = document.querySelector('#login'),
+            logEl        = document.querySelector('#log'),
+            nameInput    = document.querySelector('#photoname'),
+            tokenEl      = document.querySelector('#token'),
+            imgBase64 = '';
+            width = 320,
+            height = 0;
+
+        createStruct = {
+            "ContentCreate": {
+                "ContentType": {
+                    "_href": "/content/types/39"
+                },
+                "mainLanguageCode": "eng-GB",
+                "LocationCreate": {
+                    "ParentLocation": {
+                        "_href": "/content/locations/1/2/143"
+                    },
+                    "sortField": "PATH",
+                    "sortOrder": "ASC"
+                },
+                "Section": {
+                    "_href": "/content/sections/1"
+                },
+                "fields": {
+                    "field": [
+                    {
+                        "fieldDefinitionIdentifier": "name",
+                        "fieldValue": ""
+                        },{
+                        "fieldDefinitionIdentifier": "photo",
+                        "fieldValue": {
+                            "fileName": "",
+                            "fileSize": 0,
+                            "data": ""
+                        }
+                    }
+                    ]
+                }
+            }
+        },
+
+        loginStruct = {
+            "SessionInput": {
+                "login": "",
+                "password": ""
+            }           
+        };
+
+        function log(msg) {
+            logEl.innerHTML += msg + "\n";
+        }
+
+        function doRequest(method, resource, headers, body, callback) {
+            var request = new XMLHttpRequest();
+            log("  [REQUEST] " + method + " " + resource);
+            request.open(method, resource, true);
+            request.onreadystatechange = function () {
+                if ( request.readyState === 4 ) {
+                    log("  [REQUEST] Done!");
+                    if ( callback ) {
+                        console.log(request.responseText);
+                        callback.apply(this, [request.responseText]);
+                    }  
+                }
+            };
+            if ( headers ) {
+                for(var k in headers) {
+                    request.setRequestHeader(k, headers[k]);
+                }
+            }
+            request.send(body);
+        }
+
+        navigator.getMedia = ( navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia
+        );
+
+        log("Asking for the right to use the webcam");
+        navigator.getMedia({
+                video: true,
+                audio: false
+            },
+            function(stream) {
+                if (navigator.mozGetUserMedia) {
+                    video.mozSrcObject = stream;
+                    } else {
+                    var vendorURL = window.URL || window.webkitURL;
+                    video.src = vendorURL.createObjectURL(stream);
+                }
+                video.play();
+            },
+            function(err) {
+                console.log("An error occured! " + err);
+            }
+        );
+
+        video.addEventListener('canplay', function(ev){
+            log("OK, let's look at your face(s) ?");
+            if (!streaming) {
+                //log("Please login");
+                log("Cheese!");
+                startbutton.removeAttribute("disabled");
+                height = video.videoHeight / (video.videoWidth/width);
+                video.setAttribute('width', width);
+                video.setAttribute('height', height);
+                canvas.setAttribute('width', width);
+                canvas.setAttribute('height', height);
+                streaming = true;
+            }
+        }, false);
+
+        function takepicture() {
+            log("Taking a picture");
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+            imgBase64 = canvas.toDataURL('image/jpeg', 0.9);
+            photo.setAttribute('src', imgBase64);
+        }
+
+        login.addEventListener('click', function(ev) {
+            loginStruct.SessionInput.login = document.getElementById('username').value;
+            loginStruct.SessionInput.password = document.getElementById('password').value;
+            log("Trying to login as " + loginStruct.SessionInput.login);
+            doRequest(
+                'POST',
+                '/api/ezp/v2/user/sessions', {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/vnd.ez.api.SessionInput+json'
+                },
+                JSON.stringify(loginStruct),
+                function (loginResponse) {
+                    var token = JSON.parse(loginResponse).Session.csrfToken;
+                    tokenEl.innerHTML = token;
+                    log("We have a CSRF token, cheese!");
+                }
+            );
+        });
+
+        startbutton.addEventListener('click', function(ev) {
+            takepicture();
+            ev.preventDefault();
+        }, false);
+
+        nameInput.addEventListener('keypress', function(ev) {
+            // todo check the input
+            go.removeAttribute('disabled');
+        }, false);
+
+        go.addEventListener('click', function (ev) {
+            var b64 = photo.getAttribute('src').replace('data:image/jpeg;base64,', '');
+
+            log("Creating the draft");
+            createStruct.ContentCreate.fields.field[0].fieldValue = nameInput.value;
+            createStruct.ContentCreate.fields.field[1].fieldValue.fileName = nameInput.value + '.jpg';
+            createStruct.ContentCreate.fields.field[1].fieldValue.fileSize = 400;
+            createStruct.ContentCreate.fields.field[1].fieldValue.data = b64;
+            doRequest(
+                'POST',
+                '/api/ezp/v2/content/objects', {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/vnd.ez.api.ContentCreate+json'
+                    //,'X-CSRF-Token': tokenEl.innerHTML
+                },
+                JSON.stringify(createStruct),
+                function (createDraftResponse) {
+                    var struct = JSON.parse(createDraftResponse),
+                        publishUrl = struct.Content._href + '/versions/1',
+                        locationsUrl = struct.Content.Locations._href;
+
+                    log("Publishing the draft");
+                    doRequest(
+                        'PUBLISH',
+                        publishUrl, {
+                            'Accept': 'application/json'
+                            //,'X-CSRF-Token': tokenEl.innerHTML
+                        },
+                        false,
+                        function () {
+                            log("Getting the location list");
+                            doRequest(
+                                'GET',
+                                locationsUrl,
+                                {'Accept': 'application/json'},
+                                false,
+                                function (locationListResponse) {
+                                    var locationUrl = JSON.parse(locationListResponse).LocationList.Location[0]._href;
+
+                                    log("Getting the location");
+                                    doRequest(
+                                        'GET',
+                                        locationUrl,
+                                        {'Accept': 'application/json'},
+                                        false,
+                                        function (location) {
+                                            var pathString = JSON.parse(location).Location.pathString,
+                                                urlAliasesUrl = '/api/ezp/v2/content/locations' + pathString + 'urlaliases?custom=false';
+
+                                            log("Getting aliases of the location");
+                                            doRequest(
+                                                'GET',
+                                                urlAliasesUrl,
+                                                {'Accept': 'application/json'},
+                                                false,
+                                                function (urlResponse) {
+                                                    var urlAliasUrl = JSON.parse(urlResponse).UrlAliasRefList.UrlAlias[0]._href;
+
+                                                    log("Gettting the URL alias");
+                                                    doRequest(
+                                                        'GET',
+                                                        urlAliasUrl,
+                                                        {'Accept': 'application/json'},
+                                                        false,
+                                                        function (aliasResponse) {
+                                                            var path = JSON.parse(aliasResponse).UrlAlias.path;
+                                                            log('Look at you <a href="' + path + '">' + path + '</a>!');
+                                                        }
+                                                    );
+                                                }
+                                            );
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        });
+
+    })();
+</script>
+
+
+</body>
+</html>
