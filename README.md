@@ -1,11 +1,12 @@
-# eZ Publish REST Demo
+# eZ Publish REST API Demo
 
 This repository contains a very rough example of the usage of the REST API in
 JavaScript presented at [the eZ Unconf #2 in
 2013](http://share.ez.no/blogs/ez/ez-unconference-2-look-back-at-the-event-slides-and-pics).
 
 The application allows to take a picture with the webcam of the computer and to
-create the corresponding content in the eZ Publish repository with the REST API!
+create the corresponding Image content in the eZ Publish repository with the
+REST API!
 
 ## Requirements
 
@@ -17,7 +18,7 @@ create the corresponding content in the eZ Publish repository with the REST API!
 
 ## Install
 
-  * Clone this Git repository
+  * Clone this git repository
   * Copy or symlink the `demorest` folder into the `web` folder of eZ Publish
   * If you installed [the rewrite rules for a virtual host
     setup](https://confluence.ez.no/display/EZP51/Virtual+host+setup), you need
