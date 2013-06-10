@@ -42,6 +42,10 @@ fieldset
 }
 .authenticate
 {
+    /*
+     * Comment the following line to get the login form and use the session
+     * authentication method
+     */
     display:none;
     text-align:left;
 }

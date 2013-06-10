@@ -42,3 +42,23 @@ create the corresponding content in the eZ Publish repository with the REST API!
 Here are the results in one screenshot:
 
 ![Screenshot of the app](https://github.com/ezunconference/eZunConf2013-REST-API-demo/raw/master/screenshot.png)
+
+## Session authentication
+
+Since eZ Publish 5.1, it's also possible to create a session through the REST
+API. The code to test this new feature is embed in the demo, but not activated.
+
+Here are the steps to use this new feature:
+
+  1. Close and open again your browser so that it *forgets* the basic auth
+  1. Remove the cookies for the domain your are working on
+  1. [enable the session authentication in eZ
+     Publish](https://confluence.ez.no/display/EZP/REST+API+Authentication#RESTAPIAuthentication-Settingitup)
+  1. Unhide the login form by commenting the `display: none` CSS rule in
+     style.css (around line 50)
+  1. Uncomment the two `//,'X-CSRF-Token': tokenEl.innerHTML` lines (Warning:
+     make sure to keep the comma at the beginning of those lines)
+
+The first time you want to create an image, you now need to click on the
+*Login!* button to authenticate your self. The rest of the usage paragraph
+remains the same.
