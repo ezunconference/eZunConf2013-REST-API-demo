@@ -64,12 +64,12 @@
         createStruct = {
             "ContentCreate": {
                 "ContentType": {
-                    "_href": "/content/types/27"
+                    "_href": "/content/types/27" // 27 is the content type id of the Image content type
                 },
                 "mainLanguageCode": "eng-GB",
                 "LocationCreate": {
                     "ParentLocation": {
-                        "_href": "/content/locations/1/2"
+                        "_href": "/content/locations/1/2" // let's create the image in the root of eZ, under the location 2
                     },
                     "sortField": "PATH",
                     "sortOrder": "ASC"
@@ -155,7 +155,6 @@
         video.addEventListener('canplay', function(ev){
             log("OK, let's look at your face(s) ?");
             if (!streaming) {
-                //log("Please login");
                 log("Cheese!");
                 startbutton.removeAttribute("disabled");
                 streaming = true;
@@ -201,7 +200,7 @@
         }, false);
 
         nameInput.addEventListener('keypress', function(ev) {
-            // todo check the input
+            /* todo check the input */
             go.removeAttribute('disabled');
         }, false);
 
