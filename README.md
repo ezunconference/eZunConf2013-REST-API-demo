@@ -44,8 +44,7 @@ Here are the results in one screenshot:
 
 ![Screenshot of the app](https://github.com/ezunconference/eZunConf2013-REST-API-demo/raw/master/screenshot.png)
 
-[A screencast is also available in REST API Demo application at the eZ Unconf
-#2](
+[A screencast is also available in REST API Demo application at the eZ Unconf](
 http://share.ez.no/blogs/damien-pobel/rest-api-demo-application-at-the-ez-unconf-2)
 blog post on share.ez.no ([A french version of this post is also
 online](http://damien.pobel.fr/post/ez-publish-rest-api-v2-demo-unconf-2013)).
