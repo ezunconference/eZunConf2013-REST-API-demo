@@ -64,18 +64,18 @@
         createStruct = {
             "ContentCreate": {
                 "ContentType": {
-                    "_href": "/content/types/27" // 27 is the content type id of the Image content type
+                    "_href": "/api/ezp/v2/content/types/27" // 27 is the content type id of the Image content type
                 },
                 "mainLanguageCode": "eng-GB",
                 "LocationCreate": {
                     "ParentLocation": {
-                        "_href": "/content/locations/1/2" // let's create the image in the root of eZ, under the location 2
+                        "_href": "/api/ezp/v2/content/locations/1/2" // let's create the image in the root of eZ, under the location 2
                     },
                     "sortField": "PATH",
                     "sortOrder": "ASC"
                 },
                 "Section": {
-                    "_href": "/content/sections/1"
+                    "_href": "/api/ezp/v2/content/sections/1"
                 },
                 "fields": {
                     "field": [
